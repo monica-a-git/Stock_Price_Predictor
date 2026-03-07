@@ -1,17 +1,16 @@
-name: Daily Stock Prediction
+name: Daily Stock Bot
 
 on:
   schedule:
-    # Runs at 22:00 UTC (After US Market Close)
-    # 22:00 UTC = 3:30 AM IST (Next Day)
-    - cron: '0 22 * * 1-5'
-  workflow_dispatch:
+    # Runs at 22:30 UTC (Market Closed)
+    - cron: '30 22 * * 1-5'
+  workflow_dispatch: # Allows manual click
 
 jobs:
-  run-system:
+  run-pipeline:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # ALLOWS SAVING DATA
+      contents: write # ALLOWS SAVING DATA BACK TO REPO
       
     steps:
       - name: Checkout Code
@@ -20,21 +19,21 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.11'
           cache: 'pip'
 
       - name: Install Dependencies
         run: pip install -r requirements.txt
 
-      - name: Run Pipeline
+      - name: Run AI Pipeline
         env:
           ALPHA_VANTAGE_KEY: ${{ secrets.ALPHA_VANTAGE_KEY }}
         run: python main.py
 
-      - name: Commit Results
+      - name: Commit & Push Results
         run: |
           git config --global user.name "StockBot"
           git config --global user.email "bot@noreply.github.com"
-          git add data/*.csv models/* latest_predictions.txt
-          git commit -m "Auto: Data Update & Prediction" || echo "No changes"
+          git add data/*.csv models/* latest_predictions.csv
+          git commit -m "Auto: Daily Update" || echo "No changes to commit"
           git push
