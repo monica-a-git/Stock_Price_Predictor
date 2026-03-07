@@ -1,0 +1,10 @@
+pandas
+numpy
+requests
+scikit-learn
+tensorflow-cpu
+lightgbm
+pandas_ta
+joblib
+streamlit
+plotly
