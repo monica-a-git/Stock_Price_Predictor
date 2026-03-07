@@ -49,7 +49,8 @@ def run_pipeline():
             print(f"[{ticker}] PREDICTION: ${results[ticker]}")
             
             # Rate limit respect
-            time.sleep(12) 
+            print("Waiting 15 seconds for API rate limit...")
+            time.sleep(15) 
             
         except Exception as e:
             print(f"[{ticker}] Pipeline Failed: {e}")
