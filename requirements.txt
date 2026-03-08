@@ -1,11 +1,10 @@
-pandas==2.2.2
-numpy==1.26.4
-requests==2.32.0
-scikit-learn==1.4.2
-# Use the latest stable TF version, not tensorflow-cpu, as it often resolves better
-tensorflow==2.16.1 
-lightgbm==4.1.2
-pandas_ta==2.2.14
-joblib==1.4.2
-streamlit==1.33.0  # Downgrade Streamlit slightly
-plotly==5.22.0
+pandas
+numpy
+requests
+scikit-learn
+tensorflow-cpu
+lightgbm
+pandas_ta
+joblib
+streamlit
+plotly
