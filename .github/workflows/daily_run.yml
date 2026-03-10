@@ -32,16 +32,9 @@ jobs:
 
       - name: Commit & Push Results
         run: |
-          git config --global user.name "StockBot"
-          git config --global user.email "bot@noreply.github.com"
-          
-          # Pull latest changes to avoid merge conflicts
-          git pull origin main --rebase
-          
-          # Add specific files
-          git add data/*.csv models/*.h5 models/*.pkl latest_predictions.csv
-          
-          # Commit only if changes exist
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      
+          git add .
           git commit -m "Auto: Daily Model & Data Update" || echo "No changes to commit"
-          
-          git push origin main
+          git push
