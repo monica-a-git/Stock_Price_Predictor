@@ -11,6 +11,8 @@ This project predicts the next trading day close price for selected US stocks us
 
 The streamlit dashboard `app.py` displays the latest predictions and historical price charts for each ticker.
 
+Deployed on : https://stockpricedetector-monica-a-git.streamlit.app/
+
 ## Models and Methodology
 
 ### 1. Data Acquisition
