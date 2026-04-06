@@ -58,6 +58,10 @@ class HybridModel:
         d_train = lgb.Dataset(X_lgbm, label=y_lgbm)
         self.lgbm_model = lgb.train(params, d_train, num_boost_round=100)
         joblib.dump(self.lgbm_model, self.lgbm_path)
+        
+        # Return features, true labels, and the aligned dates for historical analysis
+        aligned_dates = df_features.index[Config.SEQ_LEN : Config.SEQ_LEN + min_len]
+        return X_lgbm, y_lgbm, aligned_dates
 
     def predict_tomorrow(self, last_sequence_scaled, last_indicators_df, scaler):
         """

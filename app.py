@@ -13,8 +13,6 @@ st.sidebar.header("Configuration")
 ticker = st.sidebar.selectbox("Select Stock", ["AAPL", "GOOGL", "MSFT", "AMZN", "TSLA"])
 
 # --- LOAD PREDICTIONS ---
-prediction = None
-preds = None
 if os.path.exists("latest_predictions.csv"):
     preds = pd.read_csv("latest_predictions.csv")
     
@@ -37,18 +35,6 @@ if os.path.exists(csv_path):
     df['timestamp'] = pd.to_datetime(df['timestamp'])
     df = df.sort_values('timestamp')
 
-    latest_close = df['close'].iloc[-1]
-    accuracy_info = None
-    if prediction is not None and latest_close != 0:
-        error_pct = ((prediction - latest_close) / latest_close) * 100
-        accuracy_pct = max(0.0, 100.0 - abs(error_pct))
-        accuracy_info = {
-            'Latest Actual Close': [f"${latest_close:.2f}"],
-            'Predicted Close': [f"${prediction:.2f}"],
-            'Error (%)': [f"{error_pct:.2f}%"],
-            'Estimated Accuracy (%)': [f"{accuracy_pct:.2f}%"]
-        }
-
     # Tabs for Chart vs Data
     tab1, tab2 = st.tabs(["📉 Price Chart", "📄 Raw Data"])
 
@@ -68,17 +54,15 @@ if os.path.exists(csv_path):
         st.plotly_chart(fig, use_container_width=True)
 
     with tab2:
-        if accuracy_info is not None:
-            st.subheader("Prediction Performance")
-            perf_df = pd.DataFrame(accuracy_info)
-            st.dataframe(perf_df, hide_index=True)
-        
-        if preds is not None:
-            st.subheader("Latest Predictions")
-            st.dataframe(preds, hide_index=True)
-
-        st.subheader("Recent Raw Data")
-        st.dataframe(df.tail(10).sort_values('timestamp', ascending=False), hide_index=True)
+        pred_csv = f"data/{ticker}_predictions.csv"
+        if os.path.exists(pred_csv):
+            pred_df = pd.read_csv(pred_csv)
+            pred_df['timestamp'] = pd.to_datetime(pred_df['timestamp'])
+            # Left join so we keep all raw dates, but append predictions where matching
+            display_df = pd.merge(df, pred_df, on='timestamp', how='left')
+        else:
+            display_df = df
+        st.dataframe(display_df.tail(10).sort_values('timestamp', ascending=False), hide_index=True)
 
 else:
     st.error(f"Data file for {ticker} not found.")

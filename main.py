@@ -33,8 +33,31 @@ def run_pipeline():
             model.build_lstm(input_shape=(X_lstm.shape[1], X_lstm.shape[2]))
             
             # Pass df_enriched so the model can extract indicators for LightGBM
-            model.train(X_lstm, y_lstm, df_enriched)
+            X_lgbm, y_lgbm, aligned_dates = model.train(X_lstm, y_lstm, df_enriched)
             
+            # 3b. Evaluate on Historical Data
+            scaled_preds = model.lgbm_model.predict(X_lgbm)
+            
+            dummy_preds = np.zeros((len(scaled_preds), 5))
+            dummy_preds[:, 3] = scaled_preds
+            unscaled_preds = fe.scaler.inverse_transform(dummy_preds)[:, 3]
+            
+            dummy_actuals = np.zeros((len(y_lgbm), 5))
+            dummy_actuals[:, 3] = y_lgbm
+            unscaled_actuals = fe.scaler.inverse_transform(dummy_actuals)[:, 3]
+            
+            errors_pct = np.abs(unscaled_actuals - unscaled_preds) / unscaled_actuals * 100
+            accuracies_pct = 100 - errors_pct
+            
+            hist_df = pd.DataFrame({
+                'timestamp': aligned_dates,
+                'Latest Actual Close': np.round(unscaled_actuals, 2),
+                'Predicted Close': np.round(unscaled_preds, 2),
+                'Error (%)': np.round(errors_pct, 2),
+                'Accuracy (%)': np.round(accuracies_pct, 2)
+            })
+            hist_df.to_csv(f"data/{ticker}_predictions.csv", index=False)
+
             # 4. Predict Tomorrow
             # Grab last 60 days from full_scaled_data for LSTM
             last_60_days = full_scaled_data[-Config.SEQ_LEN:]
