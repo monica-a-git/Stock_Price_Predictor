@@ -1,4 +1,4 @@
-# Stock Price Detector
+# Stock Price Predictor
 
 A hybrid stock price forecasting pipeline combining sequential deep learning with gradient boosting regression.
 
