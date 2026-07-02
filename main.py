@@ -1,7 +1,7 @@
 import time
 import numpy as np
 import pandas as pd
-import matplotlib.pyplt as plt
+
 from datetime import datetime
 from src.config import Config
 from src.data_loader import DataLoader
